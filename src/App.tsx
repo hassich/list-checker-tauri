@@ -690,13 +690,13 @@ function App() {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">アプリケーション</span>
                     <span className="font-mono font-semibold text-gray-800">
-                      v1.3.2
+                      v1.3.3
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">ビルド日</span>
                     <span className="text-sm text-gray-800">
-                      2025年10月15日
+                      2026年4月3日
                     </span>
                   </div>
                 </div>
@@ -712,16 +712,16 @@ function App() {
                   {/* リポジトリ説明 */}
                   <div className="mb-4">
                     <p className="text-sm text-gray-600 mb-2">
-                      List Checker Tauri
+                      List Checker Tauri forked by hassich
                     </p>
                     <a
-                      href="https://github.com/TommyZ-7/list-checker-tauri"
+                      href="https://github.com/hassich/list-checker-tauri"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center"
                     >
                       <span className="font-mono">
-                        TommyZ-7/list-checker-tauri
+                        hassich/list-checker-tauri
                       </span>
                       <svg
                         className="w-4 h-4 ml-1"

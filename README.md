@@ -13,6 +13,7 @@
     - xlsx、jsonparseのバックエンド化
     - フロントエンド処理の移行によるLCP改善
 - CLIモード実装(for WSL2 Container, Docker, and other Standalone Server purpose)
+- その他、気になる点について修正（依存関係の整理、終了コードを正常終了と異常終了で分離、リファクタリング）
 
 以下、元リポジトリから引用
 
