@@ -33,6 +33,10 @@ pub struct AppState4 {
     store: Mutex<HashMap<String, Settings>>,
 }
 
+pub struct AppState5 {
+    store: Mutex<HashMap<String, HashMap<String, String>>>,
+}
+
 impl AppState {
     pub fn new() -> Self {
         Self::default()
@@ -104,10 +108,30 @@ impl AppState4 {
     }
 }
 
+impl AppState5 {
+    pub fn new() -> Self {
+        Self {
+            store: Mutex::new(HashMap::new()),
+        }
+    }
+    
+    pub fn insert(&self, key: String, inner_key: String, value: String) {
+        let mut store = self.store.lock().unwrap();
+        let inner_map = store.entry(key).or_insert_with(HashMap::new);
+        inner_map.insert(inner_key, value);
+    }
+    
+    pub fn get_all(&self, key: &str) -> Option<HashMap<String, String>> {
+        let store = self.store.lock().unwrap();
+        store.get(key).cloned()
+    }
+}
+
 static APP_STATE: OnceLock<Arc<AppState>> = OnceLock::new();
 static APP_STATE2: OnceLock<Arc<AppState2>> = OnceLock::new();
 static APP_STATE3: OnceLock<Arc<AppState3>> = OnceLock::new();
 static APP_STATE4: OnceLock<Arc<AppState4>> = OnceLock::new();
+static APP_STATE5: OnceLock<Arc<AppState5>> = OnceLock::new();
 
 pub fn get_app_state() -> Arc<AppState> {
     APP_STATE.get_or_init(|| Arc::new(AppState::new())).clone()
@@ -122,6 +146,10 @@ pub fn get_app_state3() -> Arc<AppState3> {
 
 pub fn get_app_state4() -> Arc<AppState4> {
     APP_STATE4.get_or_init(|| Arc::new(AppState4::new())).clone()
+}
+
+pub fn get_app_state5() -> Arc<AppState5> {
+    APP_STATE5.get_or_init(|| Arc::new(AppState5::new())).clone()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

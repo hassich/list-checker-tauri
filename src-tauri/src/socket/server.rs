@@ -6,6 +6,7 @@ use crate::get_app_state;
 use crate::get_app_state2;
 use crate::get_app_state3;
 use crate::get_app_state4;
+use crate::get_app_state5;
 use local_ip_address::local_ip;
 use serde::{ Deserialize, Serialize};
 use crate::IS_SERVER_RUNNING;
@@ -140,6 +141,11 @@ async fn sync_all_data(socket: SocketRef, Data(data): Data<String>) {
     let app_state2 = get_app_state3();
     let key2 = data.clone() + ":ontheday";
     let return_data2 = app_state2.get(&key2);
+
+    let app_state5 = crate::get_app_state5();
+    let key5 = data.clone() + ":labels";
+    let return_labels = app_state5.get_all(&key5);
+
     println!("Returning data: {:?}, {:?}", return_data, return_data2);
 
     if let Err(e) = socket.emit("register_attendees_return", &(return_data)) {
@@ -148,6 +154,10 @@ async fn sync_all_data(socket: SocketRef, Data(data): Data<String>) {
 
     if let Err(e) = socket.emit("register_ontheday_return", &(return_data2)) {
         eprintln!("Failed to send sync_all_data: {}", e);
+    }
+
+    if let Err(e) = socket.emit("sync_labels_return", &(return_labels)) {
+        eprintln!("Failed to send labels: {}", e);
     }
 }
 
@@ -350,6 +360,25 @@ async fn settings_change(socket: SocketRef, Data(data): Data<SettingsData>) {
     }
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+struct LabelData {
+    uuid: String,
+    id: String,
+    label_text: String,
+}
+
+async fn update_label(socket: SocketRef, Data(data): Data<LabelData>) {
+    println!("Received update_label: {:?}", data);
+    let app_state5 = crate::get_app_state5();
+    let key = data.uuid.clone() + ":labels";
+    
+    app_state5.insert(key.clone(), data.id.clone(), data.label_text.clone());
+    
+    let room_name = data.uuid.clone();
+    if let Err(e) = socket.within(room_name.clone()).emit("update_label_return", &data).await {
+        eprintln!("Failed to broadcast label: {}", e);
+    }
+}
 
 pub async fn start_socketio_server(port: u16) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let (layer, io) = SocketIo::new_layer();
@@ -371,6 +400,7 @@ pub async fn start_socketio_server(port: u16) -> Result<(), Box<dyn std::error::
         s.on("settings_change", settings_change);
         s.on("update_settings", update_settings);
         s.on("sync_all_data", sync_all_data);
+        s.on("update_label", update_label);
     });
 
     let my_domain = local_ip().unwrap();

@@ -12,6 +12,7 @@ import {
   Download,
   Info,
   X,
+  Tag,
 } from "lucide-react";
 import { io } from "socket.io-client";
 import Papa from "papaparse";
@@ -59,6 +60,9 @@ function MonitorPageNew() {
     "warning",
     "error",
   ]);
+  const [labels, setLabels] = useState<Record<string, string>>({});
+  const [editingLabelId, setEditingLabelId] = useState<string | null>(null);
+  const [tempLabel, setTempLabel] = useState<string>("");
 
   const domainRaw = useParams<{ domain: string }>().domain || "default";
   const domain = decodeURIComponent(domainRaw);
@@ -185,6 +189,19 @@ function MonitorPageNew() {
             setActivityLogs((prev) => [...prev, log]);
           });
 
+          socketRef.current.on("sync_labels_return", (data: any) => {
+            console.log("Labels received from server:", data);
+            if (data) {
+              setLabels(data);
+            }
+          });
+
+          socketRef.current.on("update_label_return", (data: { id: string; label_text: string }) => {
+            if (data) {
+              setLabels((prev) => ({ ...prev, [data.id]: data.label_text }));
+            }
+          });
+
           socketRef.current.emit("sync_all_data", uuid);
 
           return () => {
@@ -210,6 +227,12 @@ function MonitorPageNew() {
 
     initialize();
   }, [uuid, domain, dataFetched]);
+
+  const updateLabel = (id: string, label_text: string) => {
+    if (socketRef.current) {
+      socketRef.current.emit("update_label", { uuid, id, label_text });
+    }
+  };
 
   const dataDeCompression = (compressedData: number[]) => {
     const updatedAttendees = expectedAttendeesCopyRef.current.map(
@@ -818,9 +841,44 @@ function MonitorPageNew() {
                                       {index + 1}
                                     </span>
                                   </div>
-                                  <span className="text-lg font-medium text-gray-800">
-                                    {student}
-                                  </span>
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-lg font-medium text-gray-800">
+                                      {student}
+                                    </span>
+                                    {editingLabelId === student ? (
+                                      <div className="flex items-center gap-2">
+                                        <input
+                                          type="text"
+                                          autoFocus
+                                          value={tempLabel}
+                                          onChange={(e) => setTempLabel(e.target.value)}
+                                          onBlur={() => {
+                                            setEditingLabelId(null);
+                                            updateLabel(student, tempLabel);
+                                          }}
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                              setEditingLabelId(null);
+                                              updateLabel(student, tempLabel);
+                                            }
+                                          }}
+                                          className="px-2 py-1 text-sm border rounded outline-none focus:border-purple-500"
+                                          placeholder="ラベル"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div 
+                                        onClick={() => {
+                                          setEditingLabelId(student);
+                                          setTempLabel(labels[student] || "");
+                                        }}
+                                        className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-600 rounded cursor-pointer transition-colors"
+                                      >
+                                        <Tag className="w-3 h-3" />
+                                        {labels[student] || "ラベル追加"}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </motion.div>
                             ))}
@@ -861,9 +919,44 @@ function MonitorPageNew() {
                                         {index + 1}
                                       </span>
                                     </div>
-                                    <span className="text-lg font-medium text-gray-800">
-                                      {student.id}
-                                    </span>
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-lg font-medium text-gray-800">
+                                        {student.id}
+                                      </span>
+                                      {editingLabelId === student.id ? (
+                                        <div className="flex items-center gap-2">
+                                          <input
+                                            type="text"
+                                            autoFocus
+                                            value={tempLabel}
+                                            onChange={(e) => setTempLabel(e.target.value)}
+                                            onBlur={() => {
+                                              setEditingLabelId(null);
+                                              updateLabel(student.id, tempLabel);
+                                            }}
+                                            onKeyDown={(e) => {
+                                              if (e.key === 'Enter') {
+                                                setEditingLabelId(null);
+                                                updateLabel(student.id, tempLabel);
+                                              }
+                                            }}
+                                            className="px-2 py-1 text-sm border rounded outline-none focus:border-indigo-500"
+                                            placeholder="ラベル"
+                                          />
+                                        </div>
+                                      ) : (
+                                        <div 
+                                          onClick={() => {
+                                            setEditingLabelId(student.id);
+                                            setTempLabel(labels[student.id] || "");
+                                          }}
+                                          className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-600 rounded cursor-pointer transition-colors"
+                                        >
+                                          <Tag className="w-3 h-3" />
+                                          {labels[student.id] || "ラベル追加"}
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
 
                                   <motion.div

@@ -632,6 +632,7 @@
       let eventData = null;
       let expectedAttendees = [];
       let onTheDay = [];
+      let labels = {};
       let settings = {
         arrowtoday: false,
         autotodayregister: false,
@@ -837,6 +838,20 @@
           }
           updateUI();
           updateStats();
+        });
+
+        socket.on("sync_labels_return", (data) => {
+          if (data) {
+            labels = data;
+            updateUI();
+          }
+        });
+
+        socket.on("update_label_return", (data) => {
+          if (data) {
+            labels[data.id] = data.label_text;
+            updateUI();
+          }
         });
       }
 
@@ -1087,15 +1102,16 @@
         tbody.innerHTML = "";
 
         expectedAttendees.forEach((attendee) => {
+          const labelBadge = labels[attendee.id] ? `<span class="inline-flex items-center px-2 py-0.5 ml-2 mt-1 rounded text-xs font-medium bg-purple-100 text-purple-800 align-middle">${escapeHtml(labels[attendee.id])}</span>` : '';
           const row = document.createElement("tr");
           row.id = `row-${escapeHtml(attendee.id)}`;
           row.className = "hover:bg-gray-50 transition-colors duration-150";
 
           row.innerHTML = `
                     <td class="py-3 px-4 whitespace-nowrap">
-                        <span class="text-3xl font-medium">${escapeHtml(
+                        <span class="flex items-center"><span class="text-3xl font-medium">${escapeHtml(
                           attendee.id
-                        )}</span>
+                        )}</span>${labelBadge}</span>
                     </td>
                     <td class="py-3 px-4 whitespace-nowrap text-right">
                         ${
@@ -1122,15 +1138,16 @@
         tbody.innerHTML = "";
 
         onTheDay.forEach((studentId) => {
+          const labelBadge = labels[studentId] ? `<span class="inline-flex items-center px-2 py-0.5 ml-2 mt-1 rounded text-xs font-medium bg-purple-100 text-purple-800 align-middle flex-shrink-0">${escapeHtml(labels[studentId])}</span>` : '';
           const row = document.createElement("tr");
           row.id = `row-${escapeHtml(studentId)}`;
           row.className = "hover:bg-gray-50 transition-colors duration-150";
 
           row.innerHTML = `
                     <td class="py-3 px-4 whitespace-nowrap" colspan="2">
-                        <span class="text-3xl font-medium">${escapeHtml(
+                        <span class="flex items-center"><span class="text-3xl font-medium">${escapeHtml(
                           studentId
-                        )}</span>
+                        )}</span>${labelBadge}</span>
                     </td>
                 `;
           tbody.appendChild(row);

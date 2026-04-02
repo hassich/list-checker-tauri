@@ -898,6 +898,7 @@
       let socket;
       let expectedAttendees = [];
       let onTheDay = [];
+      let labels = {};
       let settings = {
         arrowtoday: false,
         autotodayregister: false,
@@ -1057,6 +1058,20 @@
             updateStats();
           }
         });
+
+        socket.on("sync_labels_return", (data) => {
+          if (data) {
+            labels = data;
+            updateUI();
+          }
+        });
+
+        socket.on("update_label_return", (data) => {
+          if (data) {
+            labels[data.id] = data.label_text;
+            updateUI();
+          }
+        });
       }
 
       // データ展開
@@ -1199,6 +1214,7 @@
                 <span class="text-base sm:text-lg font-medium text-gray-800">${escapeHtml(
                   attendee.id
                 )}</span>
+                ${labels[attendee.id] ? `<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700 font-medium whitespace-nowrap">${escapeHtml(labels[attendee.id])}</span>` : ""}
               </div>
               ${
                 attendee.attended
@@ -1234,9 +1250,11 @@
                   index + 1
                 }</span>
               </div>
-              <span class="text-base sm:text-lg font-medium text-gray-800">${escapeHtml(
+              <span class="flex items-center text-base sm:text-lg font-medium text-gray-800">${escapeHtml(
                 studentId
-              )}</span>
+              )}
+                ${labels[studentId] ? `<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700 font-medium whitespace-nowrap">${escapeHtml(labels[studentId])}</span>` : ""}
+              </span>
             </div>
           `;
           list.appendChild(item);
