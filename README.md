@@ -1,9 +1,20 @@
-# list-checker-tauri
+# list-checker-tauri forked by hassich
 
-Tauri 2.0 を使用して開発された出席管理ソフトウェアです。  
+出席管理ソフトウェアのフォークです。
 => https://github.com/TommyZ-7/list_checker
 
 ## 概要
+
+このフォークバージョンでは、以下の点について改善した/改善予定です。
+
+- スタートページUI・UX、及び終了処理の実運用に則した変更
+- 統計目的の参加者のラベル付け（条件分岐、学年別、特例）
+- バックエンドDBのDuckDBへの移行
+    - xlsx、jsonparseのバックエンド化
+    - フロントエンド処理の移行によるLCP改善
+- CLIモード実装(for WSL2 Container, Docker, and other Standalone Server purpose)
+
+以下、元リポジトリから引用
 
 このソフトウェアは、イベントや会議の出席管理を目的としたシステムです。  
 Tauri アプリケーションはサーバー機能とイベント登録・モニタ機能を提供し、実際の出席登録はブラウザベースのウェブページから行います。  
