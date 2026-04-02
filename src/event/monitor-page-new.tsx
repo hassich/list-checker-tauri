@@ -17,6 +17,7 @@ import {
 import { io } from "socket.io-client";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
+import { getLabelForId } from "../lib/label-utils";
 
 type Attendee = {
   id: string;
@@ -875,7 +876,7 @@ function MonitorPageNew() {
                                         className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-600 rounded cursor-pointer transition-colors"
                                       >
                                         <Tag className="w-3 h-3" />
-                                        {labels[student] || "ラベル追加"}
+                                        {getLabelForId(student, labels) || "ラベル追加"}
                                       </div>
                                     )}
                                   </div>
@@ -953,7 +954,7 @@ function MonitorPageNew() {
                                           className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-600 rounded cursor-pointer transition-colors"
                                         >
                                           <Tag className="w-3 h-3" />
-                                          {labels[student.id] || "ラベル追加"}
+                                          {getLabelForId(student.id, labels) || "ラベル追加"}
                                         </div>
                                       )}
                                     </div>

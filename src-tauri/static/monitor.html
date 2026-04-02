@@ -894,6 +894,15 @@
         return div.innerHTML;
       }
 
+      // 新入生判定用ロジック（TDDにて実装済みと同じもの）
+      const FRESHMAN_ID_PREFIX = "126";
+      const FRESHMAN_LABEL = "新入生";
+      function getLabelForId(id, labelsObj) {
+        if (labelsObj && labelsObj[id]) return labelsObj[id];
+        if (id && String(id).startsWith(FRESHMAN_ID_PREFIX)) return FRESHMAN_LABEL;
+        return "";
+      }
+
       // グローバル変数
       let socket;
       let expectedAttendees = [];
@@ -1214,7 +1223,7 @@
                 <span class="text-base sm:text-lg font-medium text-gray-800">${escapeHtml(
                   attendee.id
                 )}</span>
-                ${labels[attendee.id] ? `<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700 font-medium whitespace-nowrap">${escapeHtml(labels[attendee.id])}</span>` : ""}
+                ${getLabelForId(attendee.id, labels) ? `<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700 font-medium whitespace-nowrap">${escapeHtml(getLabelForId(attendee.id, labels))}</span>` : ""}
               </div>
               ${
                 attendee.attended
@@ -1253,7 +1262,7 @@
               <span class="flex items-center text-base sm:text-lg font-medium text-gray-800">${escapeHtml(
                 studentId
               )}
-                ${labels[studentId] ? `<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700 font-medium whitespace-nowrap">${escapeHtml(labels[studentId])}</span>` : ""}
+                ${getLabelForId(studentId, labels) ? `<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700 font-medium whitespace-nowrap">${escapeHtml(getLabelForId(studentId, labels))}</span>` : ""}
               </span>
             </div>
           `;
