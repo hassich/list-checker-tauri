@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# temp file
+*.un~
+*.md~
+
+# Agents MD file
+GEMINI.md
