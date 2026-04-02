@@ -1336,9 +1336,14 @@
           const data = expectedAttendees.map((attendee) => ({
             学籍番号: attendee.id,
             出席: attendee.attended ? "O" : "",
+            出席時刻: attendee.attendedAt || "",
+            新入生: getLabelForId(attendee.id, labels) === FRESHMAN_LABEL ? "True" : "False",
           }));
           const dataToday = onTheDay.map((attendee) => ({
             学籍番号: attendee,
+            出席: "O",
+            出席時刻: "",
+            新入生: getLabelForId(attendee, labels) === FRESHMAN_LABEL ? "True" : "False",
           }));
           const attendedCount = expectedAttendees.filter(
             (a) => a.attended

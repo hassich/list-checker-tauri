@@ -1304,7 +1304,7 @@
         }
 
         // データ準備
-        const data = [["学籍番号", "出席状況", "出席時刻"]];
+        const data = [["学籍番号", "出席状況", "出席時刻", "新入生"]];
 
         if (expectedAttendees && expectedAttendees.length > 0) {
           expectedAttendees.forEach((attendee) => {
@@ -1316,16 +1316,17 @@
                 ? "委任状"
                 : "未出席",
               attendee.attendedAt || "",
+              getLabelForId(attendee.id, labels) === FRESHMAN_LABEL ? "True" : "False",
             ]);
           });
         }
 
         // 当日参加者を追加
         if (onTheDay && onTheDay.length > 0) {
-          data.push(["", "", ""]); // 空行
-          data.push(["当日参加者", "", ""]);
+          data.push(["", "", "", ""]); // 空行
+          data.push(["当日参加者", "", "", ""]);
           onTheDay.forEach((id) => {
-            data.push([id, "当日参加", ""]);
+            data.push([id, "当日参加", "", getLabelForId(id, labels) === FRESHMAN_LABEL ? "True" : "False"]);
           });
         }
 

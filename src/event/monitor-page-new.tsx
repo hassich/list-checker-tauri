@@ -17,7 +17,7 @@ import {
 import { io } from "socket.io-client";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import { getLabelForId } from "../lib/label-utils";
+import { getLabelForId, FRESHMAN_LABEL } from "../lib/label-utils";
 
 type Attendee = {
   id: string;
@@ -277,9 +277,14 @@ function MonitorPageNew() {
       const data = expectedAttendees.map((attendee) => ({
         学籍番号: attendee.id,
         出席: attendee.attended ? "O" : "",
+        出席時刻: "",
+        新入生: getLabelForId(attendee.id, labels) === FRESHMAN_LABEL ? "True" : "False",
       }));
       const dataToday = onTheDay.map((attendee) => ({
         学籍番号: attendee,
+        出席: "O",
+        出席時刻: "",
+        新入生: getLabelForId(attendee, labels) === FRESHMAN_LABEL ? "True" : "False",
       }));
       const dataStatistics = {
         出席者数: attendedCount,
