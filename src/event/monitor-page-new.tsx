@@ -257,6 +257,17 @@ function MonitorPageNew() {
   const soukaiAttendedCount = attendedCount + todayCount; // 出席者数（事前登録出席者 + 当日参加者）
   const soukaiTotal = proxyCount + soukaiAttendedCount; // 総数
 
+  // 新入生割合の計算
+  const attendedFreshmenCount = [
+    ...expectedAttendees.filter((a) => a.attended).map((a) => a.id),
+    ...onTheDay,
+  ].filter((id) => getLabelForId(id, labels) === FRESHMAN_LABEL).length;
+
+  const freshmenRate =
+    soukaiAttendedCount > 0
+      ? Math.round((attendedFreshmenCount / soukaiAttendedCount) * 100)
+      : 0;
+
   const openAttendancePage = () => {
     const url = `http://${localIP}:50080/attendance.html?uuid=${uuid}&server=${domain}`;
     window.open(url, "_blank");
@@ -641,6 +652,48 @@ function MonitorPageNew() {
                         className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full"
                       />
                     </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* 新入生割合カード (全モード共通) */}
+              {true && (
+                <motion.div
+                  layout
+                  layoutId="freshmen-rate-card"
+                  className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Tag className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-700">
+                        新入生割合
+                      </h3>
+                    </div>
+                  </div>
+                  <motion.div
+                    key={freshmenRate}
+                    initial={{ scale: 1.2, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-4xl font-bold text-blue-600"
+                  >
+                    {freshmenRate}%
+                  </motion.div>
+                  <div className="mt-4 relative">
+                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${freshmenRate}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-500">
+                    出席者のうち {attendedFreshmenCount} 名が新入生
                   </div>
                 </motion.div>
               )}

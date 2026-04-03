@@ -480,6 +480,47 @@
               </div>
             </div>
 
+            <!-- 新入生割合カード -->
+            <div
+              id="freshmenRateCard"
+              class="stat-card animate-fadeInUp"
+              style="display: none"
+            >
+              <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 sm:p-3 bg-blue-100 rounded-xl">
+                  <svg
+                    class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                    ></path>
+                  </svg>
+                </div>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-700">
+                  新入生割合
+                </h3>
+              </div>
+              <div class="stat-value text-blue-600">
+                <span id="freshmenRate">0</span>%
+              </div>
+              <div class="mt-4 progress-bar">
+                <div
+                  id="freshmenProgressFill"
+                  class="progress-fill"
+                  style="width: 0%; background: linear-gradient(90deg, #60a5fa, #2563eb);"
+                ></div>
+              </div>
+              <div class="mt-2 text-xs sm:text-sm text-gray-500">
+                出席者のうち <span id="freshmenCount">0</span> 名が新入生
+              </div>
+            </div>
+
             <!-- 総会モード: 委任状数カード -->
             <div
               id="soukaiProxyCard"
@@ -1105,6 +1146,7 @@
         );
         const todayCard = document.getElementById("todayCard");
         const totalCard = document.getElementById("totalCard");
+        const freshmenRateCard = document.getElementById("freshmenRateCard");
 
         if (settings.soukai && !settings.noList) {
           // 総会モード
@@ -1148,6 +1190,9 @@
           }
         }
 
+        // 新入生割合カードの表示制御 (全モードで強制表示)
+        if (freshmenRateCard) freshmenRateCard.style.display = "block";
+
         // リストタイトル
         document.getElementById("listTitle").textContent = settings.noList
           ? "当日参加者リスト"
@@ -1170,6 +1215,18 @@
         const attendanceRate =
           totalCount > 0 ? Math.round((attendedCount / totalCount) * 100) : 0;
         const todayCount = onTheDay.length;
+
+        // 新入生の計算
+        const attendedFreshmenCount = expectedAttendees.filter((a) => a.attended && getLabelForId(a.id, labels) === FRESHMAN_LABEL).length + onTheDay.filter(id => getLabelForId(id, labels) === FRESHMAN_LABEL).length;
+        const soukaiAttendedCountForFr = attendedCount + todayCount;
+        const freshmenRate = soukaiAttendedCountForFr > 0 ? Math.round((attendedFreshmenCount / soukaiAttendedCountForFr) * 100) : 0;
+        
+        const frCountEl = document.getElementById("freshmenCount");
+        const frRateEl = document.getElementById("freshmenRate");
+        const frFillEl = document.getElementById("freshmenProgressFill");
+        if (frCountEl) frCountEl.textContent = attendedFreshmenCount;
+        if (frRateEl) frRateEl.textContent = freshmenRate;
+        if (frFillEl) frFillEl.style.width = freshmenRate + "%";
 
         if (settings.soukai) {
           const proxyCount = totalCount - attendedCount;
